@@ -20,7 +20,7 @@ app.use(
 		credentials: true,
 	})
 );
-app.use(express.static(path.join(__dirname, "../../frontend/.next")));
+// app.use(express.static(path.join(__dirname, "../../frontend/.next")));
 
 //Api Routes
 app.use("/api/user", userLogin);
