@@ -1,8 +1,9 @@
 import express, {Request, Response} from "express";
 import {check, validationResult} from "express-validator";
-import User from "../models/user.model";
+import User from "../models/User.model";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import verifyToken from "../middleware/auth.middleware";
 
 const router = express.Router();
 
@@ -20,9 +21,8 @@ router.post(
 		if (!errors.isEmpty()) {
 			return res.status(400).json({errors: errors.array()});
 		}
-
 		const {email, password} = req.body;
-
+		console.log(email, password);
 		try {
 			//check if email is valid
 			const user = await User.findOne({email: email});
@@ -33,6 +33,7 @@ router.post(
 			if (!isPasswordMatch)
 				return res.status(400).json({message: "Password do not match"});
 
+			console.log(process.env.JWT_SECRET_KEY);
 			//token generate
 			const token = jwt.sign(
 				{userId: user.id},
@@ -50,10 +51,33 @@ router.post(
 
 			return res.status(200).json({userId: user._id});
 		} catch (error: any) {
-			console.error("Login error:", error.message);
+			console.error("Login error:", error);
 			return res.status(500).json({message: "Server error"});
 		}
 	}
 );
+
+router.get("/validate-token", verifyToken, (req: Request, res: Response) => {
+	try {
+		return res.status(200).json({userId: req.userId});
+		// res.status(200).json({message: "hello user token"});
+	} catch (error: any) {
+		console.error("Token validation error:", error.message);
+		res.status(401).json({message: "Unauthorized"});
+	}
+});
+
+router.post("/logout", (req: Request, res: Response) => {
+	try {
+		res
+			.cookie("auth_token", "", {
+				expires: new Date(0),
+			})
+			.json({message: "Logout successful"}); // Return a success message
+	} catch (error) {
+		console.error("Error during logout:", error);
+		res.status(500).json({error: "Internal server error"}); // Return an error response
+	}
+});
 
 export default router;

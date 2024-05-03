@@ -1,5 +1,5 @@
 import express, {Request, Response} from "express";
-import User from "../models/user.model";
+import User from "../models/User.model";
 import jwt from "jsonwebtoken";
 import {check, validationResult} from "express-validator";
 
@@ -36,9 +36,8 @@ router.post(
 				firstName: req.body.firstName,
 				lastName: req.body.lastName,
 			});
-
+			``;
 			await newUser.save();
-
 			const token = jwt.sign(
 				{userID: newUser.id},
 				process.env.JWT_SECRET_KEY as string,
