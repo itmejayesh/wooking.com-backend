@@ -28,4 +28,7 @@ app.use("/api/user", userRgister);
 
 app.listen(7000, () => {
 	console.log("server is running on port 7000");
+	app.get("/", (req, res) => {
+		res.send({message: "server is running"});
+	});
 });
