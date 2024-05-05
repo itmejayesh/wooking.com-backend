@@ -4,6 +4,7 @@ import "dotenv/config";
 import mongoose from "mongoose";
 import userRgister from "./routes/UserResgister.routes";
 import userLogin from "./routes/UserLogin.routes";
+import propertyListing from "./routes/PropertyListing.routes";
 import cookieParser from "cookie-parser";
 import {v2 as cloudinary} from "cloudinary";
 
@@ -31,6 +32,7 @@ app.use(
 //Api Routes
 app.use("/api/user", userLogin);
 app.use("/api/user", userRgister);
+app.use("/api/propertylisting", propertyListing);
 
 app.listen(7000, () => {
 	console.log("server is running on port 7000");
