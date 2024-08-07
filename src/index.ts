@@ -1,19 +1,13 @@
-import express, {Request, Response} from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
 import "dotenv/config";
 import mongoose from "mongoose";
 import userRgister from "./routes/UserResgister.routes";
 import userLogin from "./routes/UserLogin.routes";
 import propertyListing from "./routes/PropertyListing.routes";
+import propertySearch from "./routes/PropertySearch.routes"
 import cookieParser from "cookie-parser";
-import {v2 as cloudinary} from "cloudinary";
 
-cloudinary.config({
-	secure: true,
-	cloud_name: process.env.CLOUD_NAME,
-	api_key: process.env.CLOUDINARY_API_KEY,
-	api_secret: process.env.CLOUDINARY_API_SECRET_KEY,
-});
 
 mongoose.connect(process.env.MONGODB_CONNECTION_URL as string);
 
@@ -21,7 +15,7 @@ mongoose.connect(process.env.MONGODB_CONNECTION_URL as string);
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(
 	cors({
 		origin: process.env.FRONTEND_URL,
@@ -33,10 +27,12 @@ app.use(
 app.use("/api/user", userLogin);
 app.use("/api/user", userRgister);
 app.use("/api/propertylisting", propertyListing);
+app.use("/api/search", propertySearch);
+
 
 app.listen(7000, () => {
 	console.log("server is running on port 7000");
 	app.get("/", (req, res) => {
-		res.send({message: "server is running"});
+		res.send({ message: "server is running" });
 	});
 });

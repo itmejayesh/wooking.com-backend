@@ -1,4 +1,4 @@
-import {NextFunction, Request, Response} from "express";
+import { NextFunction, Request, Response } from "express";
 import jwt, {
 	JsonWebTokenError,
 	JwtPayload,
@@ -16,14 +16,13 @@ declare global {
 
 const verifyToken = (req: Request, res: Response, next: NextFunction) => {
 	const token = req.cookies["auth_token"];
-	console.log(token);
-	if (!token) return res.status(401).json({message: "unauthorized"});
+	console.log("Token received:", token)
+	if (!token) return res.status(401).json({ message: "unauthorized" });
 
 	try {
 		const decodedJwt = jwt.verify(token, process.env.JWT_SECRET_KEY as string);
-		console.log(decodedJwt);
+		console.log("Decoded JWT:", decodedJwt);
 		req.userId = (decodedJwt as JwtPayload).userId;
-		console.log((decodedJwt as JwtPayload).userId);
 		next();
 	} catch (error) {
 		// Log the error
@@ -31,21 +30,14 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
 
 		// Differentiate between error types
 		if (error instanceof TokenExpiredError) {
-			return res
-				.status(401)
-				.json({error: "Unauthorized", message: "Token expired"});
+			return res.status(401).json({ error: "Unauthorized", message: "Token expired" });
 		} else if (error instanceof JsonWebTokenError) {
-			return res
-				.status(401)
-				.json({error: "Unauthorized", message: "Invalid token"});
+			return res.status(401).json({ error: "Unauthorized", message: "Invalid token" });
 		} else {
-			const errorMessage =
-				(error as any).message || "An unexpected error occurred";
-
-			return res
-				.status(500)
-				.json({error: "Internal Server Error", message: errorMessage});
+			const errorMessage = (error as any).message || "An unexpected error occurred";
+			return res.status(500).json({ error: "Internal Server Error", message: errorMessage });
 		}
+
 	}
 };
 

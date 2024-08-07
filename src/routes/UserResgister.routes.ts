@@ -11,12 +11,22 @@ router.post(
 		check("email", "email is required").isEmail(),
 		check(
 			"password",
-			" password min length 6 and max length 10 required"
-		).isLength({min: 6, max: 10}),
+			" password min length 8 and max length 10 required"
+		).isLength({min: 8, max: 10}),
 		check("firstName", "first name is required").isString(),
 		check("lastName", "last name is required").isString(),
 	],
 	async (req: Request, res: Response) => {
+
+		// get user details from frontend
+		// validate - not empty
+		// check if user exists: email
+		// create user object - create entry in db
+		// remove password and refresh token field from response
+		// check for user creation
+		// resturn response
+
+
 		const errorsResult = validationResult(req);
 		if (!errorsResult.isEmpty()) {
 			return res.status(400).json({message: errorsResult.array()});
@@ -36,8 +46,9 @@ router.post(
 				firstName: req.body.firstName,
 				lastName: req.body.lastName,
 			});
-			``;
+			``; 
 			await newUser.save();
+
 			const token = jwt.sign(
 				{userID: newUser.id},
 				process.env.JWT_SECRET_KEY as string,
@@ -53,6 +64,7 @@ router.post(
 			});
 
 			return res.status(201).json({message: "User registered successfully"});
+
 		} catch (error) {
 			console.error("Error registering user:", error);
 			return res.status(500).json({message: "Internal server error"});
